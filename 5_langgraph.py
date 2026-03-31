@@ -7,12 +7,18 @@ from dotenv import load_dotenv
 from pydantic import BaseModel, Field
 
 from langsmith import traceable
-from langchain_openai import ChatOpenAI
+from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint, HuggingFaceEmbeddings
 from langgraph.graph import StateGraph, START, END
 
 # ---------- Setup ----------
 load_dotenv()
-model = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+# ----------------- model, prompt, and pipeline -----------------
+llm = HuggingFaceEndpoint(
+  repo_id="Qwen/Qwen3-Coder-Next",
+  task='text-generation'
+)
+
+model = ChatHuggingFace(llm=llm)
 
 # ---------- Structured schema & model ----------
 class EvaluationSchema(BaseModel):

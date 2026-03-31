@@ -1,4 +1,4 @@
-from langchain_openai import ChatOpenAI
+from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint, HuggingFaceEmbeddings
 from langchain_core.tools import tool
 import requests
 from langchain_community.tools import DuckDuckGoSearchRun
@@ -21,14 +21,20 @@ def get_weather_data(city: str) -> str:
 
   return response.json()
 
-llm = ChatOpenAI()
+
+llm = HuggingFaceEndpoint(
+  repo_id="Qwen/Qwen3-Coder-Next",
+  task='text-generation'
+)
+
+model = ChatHuggingFace(llm=llm)
 
 # Step 2: Pull the ReAct prompt from LangChain Hub
 prompt = hub.pull("hwchase17/react")  # pulls the standard ReAct agent prompt
 
 # Step 3: Create the ReAct agent manually with the pulled prompt
 agent = create_react_agent(
-    llm=llm,
+    llm=model,
     tools=[search_tool, get_weather_data],
     prompt=prompt
 )

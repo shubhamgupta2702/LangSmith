@@ -1,4 +1,5 @@
 from langchain_openai import ChatOpenAI
+from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint
 from dotenv import load_dotenv
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -15,8 +16,12 @@ prompt2 = PromptTemplate(
     input_variables=['text']
 )
 
-model = ChatOpenAI()
+llm = HuggingFaceEndpoint(
+  repo_id="Qwen/Qwen3-Coder-Next",
+  task='text-generation'
+)
 
+model = ChatHuggingFace(llm=llm)
 parser = StrOutputParser()
 
 chain = prompt1 | model | parser | prompt2 | model | parser
