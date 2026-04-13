@@ -1,4 +1,3 @@
-# pip install -U langgraph langchain-openai pydantic python-dotenv langsmith
 
 import operator
 from typing import TypedDict, Annotated, List
@@ -10,9 +9,8 @@ from langsmith import traceable
 from langchain_huggingface import ChatHuggingFace, HuggingFaceEndpoint, HuggingFaceEmbeddings
 from langgraph.graph import StateGraph, START, END
 
-# ---------- Setup ----------
 load_dotenv()
-# ----------------- model, prompt, and pipeline -----------------
+
 llm = HuggingFaceEndpoint(
   repo_id="Qwen/Qwen3-Coder-Next",
   task='text-generation'
@@ -20,14 +18,14 @@ llm = HuggingFaceEndpoint(
 
 model = ChatHuggingFace(llm=llm)
 
-# ---------- Structured schema & model ----------
+
 class EvaluationSchema(BaseModel):
     feedback: str = Field(description="Detailed feedback for the essay")
     score: int = Field(description="Score out of 10", ge=0, le=10)
 
 structured_model = model.with_structured_output(EvaluationSchema)
 
-# ---------- Sample essay ----------
+
 essay2 = """India and AI Time
 
 Now world change very fast because new tech call Artificial Intel… something (AI). India also want become big in this AI thing. If work hard, India can go top. But if no careful, India go back.
@@ -98,7 +96,7 @@ def final_evaluation(state: UPSCState):
     avg = (sum(scores) / len(scores)) if scores else 0.0
     return {"overall_feedback": overall, "avg_score": avg}
 
-# ---------- Build graph ----------
+
 graph = StateGraph(UPSCState)
 
 graph.add_node("evaluate_language", evaluate_language)
@@ -117,7 +115,7 @@ graph.add_edge("final_evaluation", END)
 
 workflow = graph.compile()
 
-# ---------- Direct invoke without wrapper ----------
+
 if __name__ == "__main__":
     result = workflow.invoke(
         {"essay": essay2},
